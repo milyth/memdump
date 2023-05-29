@@ -33,7 +33,9 @@
 #define OnDestructed                                                           \
   __attribute__((destructor(101))) void OnLibraryDestructed(void)
 
-#define drop(Symbol) dlclose(_Import(Symbol))
+#define drop(Symbol)                                                           \
+  if (_Import(Symbol))                                                         \
+  dlclose(_Import(Symbol))
 #endif
 
 #if defined(_WIN32)

@@ -11,7 +11,14 @@ use(free, void, void *);
 
 OnInjected {
   char buff[PATH_MAX] = {0};
-  sprintf(buff, "memdump_output-%d", getpid());
+  const char *memdump_quiet = getenv("MEMDUMP_QUIET");
+
+  if (!getcwd(buff, PATH_MAX)) {
+    fputs("[memdump] unable to get current working directory!\n", stderr);
+    abort();
+  }
+
+  sprintf(buff, "%s/memdump_output-%d", buff, getpid());
   fp = fopen(buff, "w");
 
   if (!fp) {
@@ -19,7 +26,7 @@ OnInjected {
     _exit(1);
   }
 
-  if (*getenv("MEMDUMP_QUIET") == '1') {
+  if (memdump_quiet && *memdump_quiet == '1') {
     unsetenv("MEMDUMP_QUIET");
     return;
   }
